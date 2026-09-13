@@ -97,6 +97,16 @@ export async function interpret(question: string): Promise<InterpretOutcome> {
 /* Deterministic path                                                  */
 /* ------------------------------------------------------------------ */
 
+/** Calendar language arrives as words at least as often as digits. */
+const WORD_NUMBERS: Record<string, number> = {
+  a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6,
+  seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12,
+};
+
+function wordToNumber(token: string): number {
+  return WORD_NUMBERS[token] ?? Number(token);
+}
+
 const VAGUE_FALL_WORDS = [
   "sharp fall",
   "sharp drop",
@@ -123,8 +133,15 @@ export function deterministicExtract(question: string): Extraction {
   const q = question.toLowerCase();
 
   const mentionsNifty = /\bnifty\b|\bnse\b|\bindia\b/.test(q);
-  const mentionsOtherInstrument =
-    /\b(bank ?nifty|sensex|s&p|nasdaq|bitcoin|btc|option|futures on|reliance|tcs|infosys)\b/.test(q);
+
+  // Two distinct ways a question can fall outside what this can answer, and
+  // conflating them is a bug: naming NIFTY does not make an options question
+  // answerable from daily index closes. The topic check runs independently of
+  // the instrument check for exactly that reason.
+  const unsupportedTopic =
+    /\b(option|options|straddle|strangle|derivative|derivatives|futures|intraday|scalp|scalping|hedge)\b/.test(q);
+  const unsupportedInstrument =
+    /\b(bank ?nifty|sensex|s&p|nasdaq|dow|bitcoin|btc|crypto|ethereum|reliance|tcs|infosys|hdfc)\b/.test(q);
 
   // A percentage only counts as a "stated fall" if it sits near fall language.
   let statedFallPct: number | null = null;
@@ -137,11 +154,11 @@ export function deterministicExtract(question: string): Extraction {
   }
 
   const holdMatch = q.match(
-    /(?:hold(?:ing)?|keep|for)\s+(?:it\s+)?(\d+)\s*(day|days|week|weeks|month|months)/,
+    /(?:hold(?:ing)?|keep|for)\s+(?:it\s+)?(\d+|a|an|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s*(day|days|week|weeks|month|months)/,
   );
   let statedHoldingDays: number | null = null;
   if (holdMatch) {
-    const n = Number(holdMatch[1]);
+    const n = wordToNumber(holdMatch[1]);
     const unit = holdMatch[2];
     statedHoldingDays = unit.startsWith("week")
       ? n * 5
@@ -186,14 +203,16 @@ export function deterministicExtract(question: string): Extraction {
     });
   }
 
-  const isTestableHere = mentionsNifty || !mentionsOtherInstrument;
+  const isTestableHere = !unsupportedTopic && !unsupportedInstrument;
 
   return {
     instrument: isTestableHere ? "NIFTY50" : null,
     isTestableHere,
     outOfScopeReason: isTestableHere
       ? null
-      : "This prototype only carries NIFTY 50 daily data, so it cannot test the instrument named in the question.",
+      : unsupportedTopic
+        ? "This prototype tests entry and exit rules on daily NIFTY 50 closing prices. It carries no options, futures or intraday data, so it cannot answer this question even though it names NIFTY."
+        : "This prototype only carries NIFTY 50 daily data, so it cannot test the instrument named in the question.",
     statedFallPct,
     statedFallWindowDays,
     statedHoldingDays,
