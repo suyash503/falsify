@@ -54,6 +54,8 @@ The LLM reads English: it extracts what you stated, names what is ambiguous, and
 
 The verdict comes from `concludeFrom()` — ordinary, unit-tested code — and is handed to the narrator as a **fixed input it is instructed to express, not revisit**. The failure mode being designed out is the obvious one: a fluent model talking its way into a confident claim the evidence does not support. It cannot fabricate a statistic because it is never in a position to produce one.
 
+> **Note on the live demo:** no API key is configured there, so it runs on the rule-based reader and the template writer. The app states which path produced each stage in its own interface. Set `GEMINI_API_KEY` (free tier, no card) to exercise the model path — nothing else changes.
+
 ---
 
 ## What the system knows can go wrong

@@ -8,9 +8,15 @@
 - **Claude Code (Opus 5)** — the large majority of the implementation, and a genuine
   partner on design: the backtest engine, the agent pipeline, the API, the interface, the
   tests and the Python data pipeline.
-- **Google Gemini (free tier)** — not a build tool but a *runtime* dependency of the
-  product itself. Anthropic's API has no free tier, and that constraint is what pushed the
-  design toward being provider-agnostic rather than coupled to one vendor.
+No language model is configured in the deployed prototype, and it is worth being explicit
+about that rather than letting the architecture imply otherwise. The product has a working
+integration layer — adapters for Gemini, Groq and Anthropic, schema-validated output and a
+repair attempt when the model returns something invalid — but running it needs an API key,
+and Anthropic has no free tier. That constraint is actually what shaped the design: rather
+than couple the product to one vendor I could not afford, I made the model a replaceable
+component with a rule-based reader behind it. The deployed app runs on that fallback, says
+so in its own interface, and is fully functional either way. Supplying a key is a one-line
+change.
 
 ## 2. What I used them for
 
