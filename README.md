@@ -19,18 +19,6 @@ Everything for the assignment lives in this repository.
 | **AI Usage Note** | [`AI_USAGE.md`](./AI_USAGE.md) |
 | **Demo video** | [`docs/demo.mp4`](./docs/demo.mp4) |
 
-**Demo video timestamps** — the video runs longer than the suggested 2-3 minutes; these
-let you jump to whichever part you want:
-
-| | |
-|---|---|
-| Start | What it is, and why the question cannot be answered as asked |
-| CLARIFY | The system refuses to guess the two parameters that decide the answer |
-| DEFINE | Every parameter tagged with where it came from |
-| TEST / LEARN | The comparison against ordinary days, and the NO EVIDENCE verdict |
-| Look-ahead fork | The same experiment run dishonestly, returning INVALID |
-| Close | How AI was used, and what I would do next |
-
 > **Note on the live link:** no database is attached, so experiments cannot be
 > read back after they are created on the hosted version - Vercel runs each route as a
 > separate function with its own memory, and the app says so rather than failing silently.
