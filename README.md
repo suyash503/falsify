@@ -4,6 +4,41 @@
 
 **A research tool that turns a vague market question into an experiment, and then argues with the result.**
 
+---
+
+## Submission
+
+Everything for the assignment lives in this repository.
+
+| Deliverable | Where |
+|---|---|
+| **Working prototype** | [falsify-pink.vercel.app](https://falsify-pink.vercel.app/) |
+| **Source code** | this repository |
+| **Thinking Note** (2 pages) | [`thinking_note.pdf`](./thinking_note.pdf) |
+| **README** | this file |
+| **AI Usage Note** | [`AI_USAGE.md`](./AI_USAGE.md) |
+| **Demo video** | [`docs/demo.mp4`](./docs/demo.mp4) |
+
+**Demo video timestamps** — the video runs longer than the suggested 2-3 minutes; these
+let you jump to whichever part you want:
+
+| | |
+|---|---|
+| Start | What it is, and why the question cannot be answered as asked |
+| CLARIFY | The system refuses to guess the two parameters that decide the answer |
+| DEFINE | Every parameter tagged with where it came from |
+| TEST / LEARN | The comparison against ordinary days, and the NO EVIDENCE verdict |
+| Look-ahead fork | The same experiment run dishonestly, returning INVALID |
+| Close | How AI was used, and what I would do next |
+
+> **Note on the live link:** no database is attached, so experiments cannot be
+> read back after they are created on the hosted version - Vercel runs each route as a
+> separate function with its own memory, and the app says so rather than failing silently.
+> Running locally (`npm install && npm run dev`) gives the complete journey with no setup at
+> all. The video shows the full flow end to end.
+
+---
+
 Ask *"Does buying NIFTY after a sharp fall work?"* and most tools will hand you a number. This one starts by pointing out that the question cannot be answered as asked, refuses to guess the two things that would decide the answer, and — once you have decided them — tests the idea against nineteen years of NIFTY 50 history *and against simply having been invested*, which is the comparison that actually settles the question.
 
 On the seed question, the honest answer is **no evidence**. The tool says so.
