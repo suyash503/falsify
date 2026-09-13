@@ -5,6 +5,8 @@
 **A research tool that turns a vague market question into an experiment, and then argues with the result.**
 
 ---
+here is the demo video link-
+https://youtu.be/XdWW6mmYY88
 
 ## Submission
 
