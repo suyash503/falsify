@@ -1,0 +1,45 @@
+{
+  "symbol": "^NSEI",
+  "instrument": "NIFTY50",
+  "description": "NIFTY 50 total-return-excluded price index, daily OHLC.",
+  "source": "Yahoo Finance chart API",
+  "retrieved_at": "2026-09-13T14:31:22.901380+00:00",
+  "requested_range": {
+    "start": "2007-01-01",
+    "end": "2026-09-13"
+  },
+  "actual_range": {
+    "start": "2007-09-17",
+    "end": "2026-09-11"
+  },
+  "rows": 4659,
+  "sha256": "d6aa798f83302471fc35cc89a50e7babbf8fc871cd870961643e51c1dd90695d",
+  "quality_report": {
+    "rows_dropped_null_ohlc": 34,
+    "rows_dropped_duplicate_date": 0,
+    "rows_dropped_non_positive": 0,
+    "rows_dropped_ohlc_inconsistent": 0,
+    "extreme_moves_flagged": [
+      {
+        "date": "2008-10-24",
+        "return_pct": -12.2
+      },
+      {
+        "date": "2009-05-18",
+        "return_pct": 17.74
+      },
+      {
+        "date": "2020-03-23",
+        "return_pct": -12.98
+      }
+    ],
+    "calendar_gaps_flagged": [],
+    "rows_in": 4693,
+    "rows_out": 4659
+  },
+  "known_limitations": [
+    "Price index only - dividends are excluded, so long-hold returns are understated by roughly 1-1.5% a year.",
+    "Index level is not directly tradable; a real implementation would trade a futures contract or ETF with its own tracking error, roll cost and bid-ask spread.",
+    "Survivorship and reconstitution effects inside the index are inherited from the index provider and not modelled here."
+  ]
+}
