@@ -2,13 +2,21 @@
 
 Ordered. Timeboxed. Nothing gets added to this list — new ideas go in `v2.md`.
 
-- [ ] **Deploy to Vercel** — 15 min
-      vercel.com/new → import `suyash503/falsify` → Deploy. No env vars needed.
-      If `DATABASE_URL` takes more than 5 minutes, skip it. The app runs without
-      one and says so in the interface.
+- [x] **Deploy to Vercel** — done: https://falsify-pink.vercel.app/
 
 - [ ] **Record the demo** — 30 min
-      Follow `DEMO_SCRIPT.md`. **The third take ships.**
+      Follow `DEMO_SCRIPT.md`. Record against `npm run dev` (localhost), not the
+      deployed URL. **The third take ships.**
+
+- [ ] **Attach Neon so the live link works** — 10 min
+      The deployed app needs a database: on Vercel, route handlers and page
+      renders are separate functions with separate memory, so the in-memory
+      journal cannot be read back and every experiment page 404s.
+        1. neon.tech → new project (free, no card) → copy the connection string
+        2. Vercel → project → Settings → Environment Variables → DATABASE_URL
+        3. Redeploy
+        4. Locally: put the same string in `.env.local`, run `npm run db:push`
+      Verify: open the live URL, ask the question, confirm the page loads.
 
 - [ ] **Thinking Note** — 30 min, 2 pages max
       Source material you already have:
