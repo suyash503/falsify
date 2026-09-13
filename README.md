@@ -129,7 +129,7 @@ src/app/          pages and REST route handlers
 src/components/   interface, hand-built SVG charts
 pipeline/         Python: fetch, validate and freeze the dataset
 evals/            golden set + scored runner for the interpretation stage
-tests/            69 tests
+tests/            70 tests
 ```
 
 ---
@@ -233,8 +233,9 @@ npm run db:push      # apply the schema
 **Verification:**
 
 ```bash
-npm test             # 69 tests
-npm run typecheck
+npm test             # 70 tests
+npm run typecheck    # runs `next typegen` first - the PageProps and
+                     # RouteContext helpers are generated, not committed
 npm run eval:deterministic
 npm run build
 ```

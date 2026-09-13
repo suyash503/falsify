@@ -12,7 +12,7 @@
     "data": "python pipeline/fetch_nifty.py",
     "eval": "tsx evals/run.ts",
     "eval:deterministic": "tsx evals/run.ts --deterministic",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push"
   },
