@@ -1,117 +1,148 @@
-# Demo script — 2:30
+# Demo script
 
-Read it roughly. Do not memorise it. Small stumbles are fine and make it sound human.
+Plain language. Read it roughly, in your own voice. Stumbles are fine — they make it
+sound like a person.
 
-**Before you hit record**
-- Open the deployed URL (or `localhost:3000` — a local recording is completely acceptable)
-- Have a second tab on the GitHub repo
-- Clear the journal if it is cluttered (restart the server — in-memory mode forgets)
-
-**One rule: the third take ships.** Not the best take. The third one.
+**Before recording**
+- Have the app open and ready
+- Pre-run a completed experiment in a second tab so you are never waiting
+- Pre-run the look-ahead fork in a third tab
 
 ---
 
-### 0:00 — 0:20 · What it is
+### 1 · What it is
 
-> "This is Falsify. The brief asked what happens when a user asks *'does buying NIFTY
-> after a sharp fall work?'* — and the point is that the question can't be answered as
-> asked. 'Sharp fall' isn't defined, there's no holding period, and there's no statement
-> of what we'd be comparing against. So I didn't build something that answers it. I built
-> something that shows you what the question is missing, and then tests it honestly."
+> "This is Falsify. It starts with the question *does buying NIFTY after a sharp fall
+> work?*
+>
+> The problem is you can't actually answer that. Nobody has said what a sharp fall is.
+> Or how long you'd hold it for. Or what you're even comparing it against.
+>
+> So instead of guessing, this shows you what's missing first."
 
 *Type the question. Click Investigate.*
 
 ---
 
-### 0:20 — 0:55 · Clarify — the core idea
+### 2 · It refuses to guess
 
-> "First thing it does is refuse to guess. It has picked defaults for most parameters,
-> but there are two it won't decide for you: what counts as a sharp fall, and how long
-> you'd hold. Those two move the answer more than the result itself does, so choosing
-> them silently would make the conclusion the system's rather than yours."
+> "The first thing it does is ask.
+>
+> It's picked sensible defaults for most settings. But there are two it won't decide for
+> you — what counts as a sharp fall, and how long you'd hold. Those two change the answer
+> more than anything else. If it picked them quietly, the answer would be its answer, not
+> yours."
 
-*Point at the occurrence counts.*
+*Point at the numbers under each option.*
 
-> "And each option tells you what it costs you in sample size before you pick it. Three
-> percent sounds more decisive than one percent — but it's 79 occurrences in nineteen
-> years instead of 647. That's the trade-off, shown up front."
+> "And it tells you how often each one actually happened. A three percent fall sounds more
+> serious than one percent. But it's only happened 79 times in nineteen years, against
+> 647. So you can see what you're giving up before you pick."
 
-*Pick 2%, hold 5 days. Confirm.*
-
----
-
-### 0:55 — 1:20 · Define — provenance
-
-> "Now the question is a written experiment. Every parameter is tagged with where it
-> came from — mine, or the system's — and every assumption carries its reasoning."
-
-*Scroll the ledger. Stop on entry timing.*
-
-> "This one the system decides on its own, deliberately. The fall is measured at the
-> closing price, so the earliest you could actually act is the next morning's open.
-> Buying at that same close would mean trading on a price that hadn't been set yet.
-> That's look-ahead bias, and it's not a preference — it's an error. So it's the one
-> assumption I let it make unilaterally."
+*Choose 2%, hold 5 days. Confirm.*
 
 ---
 
-### 1:20 — 1:55 · Test and Learn — the baseline
+### 3 · The experiment, written out
+
+> "Now it's a proper experiment. Every line says where it came from — did I choose it, or
+> did the app? And if the app chose it, it says why."
+
+*Scroll to entry timing.*
+
+> "This one it decides on its own, on purpose.
+>
+> The fall is measured using the closing price. But you only know the closing price after
+> the market shuts — and by then you can't buy at it any more. So it buys the next
+> morning instead.
+>
+> That's not a preference. It's just the only thing that's actually possible."
+
+---
+
+### 4 · Running it
 
 *Click Run.*
 
-> "It runs the backtest — and it also runs the exact same rules on every other day in
-> the period. That's the part that matters. NIFTY went up about fivefold over these
-> nineteen years, so almost any rule that keeps you invested shows a profit. The only
-> number that answers the question is the difference between the two."
+> "When I run it, it does two things. It tests my rule. And it also tests what would have
+> happened if I'd just bought on any random day, using the exact same rules.
+>
+> That second one is the important bit. NIFTY went up about five times over these nineteen
+> years. So almost anything that keeps you invested is going to look like it made money.
+> The real question is whether buying after a fall did better than just buying."
 
-*Point at the distribution chart.*
+*Point at the chart.*
 
-> "These are the two distributions. The blue is trades after a fall, the orange is any
-> random day. They sit almost exactly on top of each other — that's the finding."
+> "These two shapes are those two things. Blue is buying after a fall. Orange is buying on
+> any day. They're sitting almost exactly on top of each other.
+>
+> That's the answer."
 
 *Point at the verdict.*
 
-> "So the verdict is NO EVIDENCE. Not because the return was negative, but because
-> sixty percent of randomly-timed trade sets did just as well. And the system separates
-> what the data shows from what it concludes, and then lists what this specifically does
-> *not* establish."
+> "So it says: no evidence. Not because it lost money — but because when it tried
+> thousands of random dates instead, most of them did just as well.
+>
+> And it keeps two things apart. Here's what the numbers say. And separately, here's what
+> it thinks that means. Plus a list of what this doesn't prove."
 
 ---
 
-### 1:55 — 2:15 · The look-ahead demo — the best beat
+### 5 · The cheating version
 
-*Scroll to next experiments. Click "How much 'edge' appears if we cheat?"*
+*Click the "how much edge if we cheat?" suggestion.*
 
-> "It also suggests what to investigate next, and each one forks into a child experiment
-> that remembers where it came from. This one runs the impossible version — buying at
-> the same close that generated the signal."
+> "It also suggests what to look at next, and each one opens as a new experiment that
+> remembers where it came from.
+>
+> This one runs the cheating version — buying at that closing price you couldn't actually
+> have bought at."
 
-*Let it run.*
+*Let it finish.*
 
-> "And it comes back INVALID. The system won't report a number from an experiment that
-> used information that didn't exist yet. I think that's more convincing than just
-> writing 'I avoided look-ahead bias' in a document."
-
----
-
-### 2:15 — 2:40 · AI, and what's next
-
-> "On AI — I used Claude Code for most of the implementation, but the split I care about
-> is inside the product: the language model reads the question and writes the
-> explanation, and that's all. It never picks a threshold, never computes a statistic,
-> and never decides the verdict. That comes from ordinary tested code and gets handed to
-> the model as a fixed input. So it can't talk itself into a confident answer the
-> evidence doesn't support."
-
-> "With more time: a real out-of-sample holdout, and a placebo test — running the same
-> machinery on sharp *rises*. If buying after rises shows the same edge, then the dip was
-> never the mechanism. That's the first thing I'd add."
+> "And it refuses to give a result. It just says invalid.
+>
+> I liked that more than writing *'I avoided look-ahead bias'* in a document somewhere."
 
 ---
 
-## If you freeze
+### 6 · AI, and what's next
 
-Say this and keep clicking — it is true and it is enough:
+> "On the AI side — I used Claude Code to write a lot of this.
+>
+> But the part I actually care about is inside the app. The AI reads your question, and it
+> writes the explanation at the end. That's it. It doesn't pick any of the numbers, and it
+> doesn't decide the verdict. That comes from normal code I can test.
+>
+> So it can't talk itself into sounding confident when the result doesn't back it up."
 
-> "The short version: it refuses to guess the two things that matter, it compares against
-> doing nothing special, and it's willing to tell you there's no evidence."
+> "If I had more time — I'd hold back the last few years of data and test on those
+> separately. And I'd run the whole thing on sharp *rises* instead of falls. If buying
+> after rises looks just as good, then the fall was never the reason.
+>
+> That's the first thing I'd add."
+
+---
+
+## If you lose your place
+
+Say this and keep going. It's true and it's enough:
+
+> "The short version — it won't guess the two things that matter, it compares against just
+> buying normally, and it's willing to tell you there's nothing here."
+
+---
+
+## Appendix — the same points, if someone asks in the interview
+
+Plain version above, precise version here. You don't need these on camera.
+
+| Plain | Precise |
+|---|---|
+| "buying on any random day" | the unconditional baseline — identical rules, exits and costs applied to every session in the window |
+| "tried thousands of random dates" | a one-sided bootstrap, 4,000 resamples, p = 0.60 on the seed question |
+| "in contiguous chunks, not single days" | circular block bootstrap — overlapping forward returns are autocorrelated, so an i.i.d. resample would manufacture significance |
+| "the cheating version" | look-ahead bias — entry at the same close that produced the signal |
+| "where each setting came from" | the provenance ledger: `user_stated`, `user_confirmed`, `system_assumed`, `needs_user_input` |
+| "it won't say more than the evidence supports" | the verdict ladder stops at `SUGGESTIVE`; there is no "proven" rung, and a test asserts it |
+| "reasons it could be wrong" | twelve guards; a critical one vetoes the conclusion outright |
