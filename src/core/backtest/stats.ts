@@ -112,6 +112,75 @@ export interface EquityPoint {
   equity: number;
 }
 
+/**
+ * Both return distributions, binned on a shared scale.
+ *
+ * Persisted with the result because the raw baseline series runs to thousands
+ * of values. Binning it here keeps the stored record small while keeping the
+ * comparison chart honest - it draws the real shape of both samples rather
+ * than a curve reconstructed from summary statistics.
+ */
+export interface ReturnHistogram {
+  /** Lower edge of each bin, plus a final upper edge. */
+  binEdges: number[];
+  /** Share of the strategy's trades in each bin, as a percentage. */
+  strategy: number[];
+  /** Share of the baseline's observations in each bin, as a percentage. */
+  baseline: number[];
+  /** Values outside the clipped window are folded into the end bins. */
+  clipped: boolean;
+}
+
+/**
+ * Bin count follows the smaller sample, not the larger one. With 124 trades
+ * spread over 36 bins the strategy series becomes a comb of noise that reads as
+ * structure; the square-root rule keeps the shape legible without smoothing
+ * away a genuinely small sample.
+ */
+function binCountFor(sampleSize: number): number {
+  return Math.max(12, Math.min(36, Math.round(Math.sqrt(sampleSize) * 2)));
+}
+
+function buildHistogram(
+  strategy: number[],
+  baseline: number[],
+): ReturnHistogram {
+  const combined = [...strategy, ...baseline].sort((a, b) => a - b);
+  if (!combined.length) {
+    return { binEdges: [], strategy: [], baseline: [], clipped: false };
+  }
+
+  const HISTOGRAM_BINS = binCountFor(Math.max(1, strategy.length));
+
+  // Clip the window to the 1st-99th percentile so a single 2008 outlier does
+  // not flatten the chart. Nothing is discarded: out-of-window values land in
+  // the end bins, and `clipped` tells the UI to label them "or worse".
+  const lo = Math.min(quantileSorted(combined, 0.01), -0.5);
+  const hi = Math.max(quantileSorted(combined, 0.99), 0.5);
+  const width = (hi - lo) / HISTOGRAM_BINS || 1;
+
+  const binEdges = Array.from({ length: HISTOGRAM_BINS + 1 }, (_, i) => lo + i * width);
+
+  const shares = (xs: number[]) => {
+    const counts = new Array<number>(HISTOGRAM_BINS).fill(0);
+    for (const x of xs) {
+      const idx = Math.min(
+        HISTOGRAM_BINS - 1,
+        Math.max(0, Math.floor((x - lo) / width)),
+      );
+      counts[idx]++;
+    }
+    return xs.length ? counts.map((c) => (c / xs.length) * 100) : counts;
+  };
+
+  return {
+    binEdges,
+    strategy: shares(strategy),
+    baseline: shares(baseline),
+    clipped: combined[0] < lo || combined[combined.length - 1] > hi,
+  };
+}
+
 export interface BacktestStats {
   tradeCount: number;
   winRatePct: number;
@@ -144,6 +213,8 @@ export interface BacktestStats {
   meanCi95: [number, number];
 
   equityCurve: EquityPoint[];
+  /** Real binned shape of both samples, for the comparison chart. */
+  returnHistogram: ReturnHistogram;
   maxDrawdownPct: number;
   timeInMarketPct: number;
 
@@ -256,6 +327,7 @@ export function summarize(raw: BacktestRaw, spec: StrategySpec): BacktestStats {
     meanCi95,
 
     equityCurve,
+    returnHistogram: buildHistogram(net, baselineReturnsPct),
     maxDrawdownPct,
     timeInMarketPct: raw.windowBars
       ? Math.min(100, (barsHeldTotal / raw.windowBars) * 100)
