@@ -1,0 +1,67 @@
+does buying nifty after a sharp fall works?
+ before approaching this question it is first important to ensure we understand the true meaning behind it, there are 2terms in here that needs definition
+sharp fall-this could imply to unique situations, it could mean 1%in onne day, or 5% in a week, as the data suggests a 1%down is pretty common like it happened in about 647 times in the past 19 years, 3%down is pretty scary it occured 79 times.so the important point here is the definition matters the most, if we pick a loose one we would just be studiying noise, rather if we choose the strict ones we would actually be studying crises.
+
+"work" - what exactly does qualifies as working out? like if we buy and hold for one day, were ttesting whether there is an immediate bounce, whereas if we do it for 3 months its a comletely different scenario, it could look lilke a loss in a day and a gain over a month.
+
+also the thing here is "working out" needs a comparison over here, as we can see the market is drifitng upward with time so almost any rule that we put into the market will show us the profit after a while. for instance if you buy after a fall and hold for 60days you get a 2.87%gain, but if you buy on a completely random day you would still be making 2.08% after holding for 60days, nearly 3quarters of the profit was due to the market drfitng upwards and it had nothing to do with the fall
+
+coming to the "information we would need before testing the idea" part, these are as follows:
+1>a precise definition of the fall
+2>a holding period
+3>what we're comparing against
+4>what are the trading costs
+
+section2--
+what the user actually said, only 3 points are mentioned by the user here 
+>buy not sell
+>operating in nifty, not something else
+>buying after a fall not after a rise
+thats it
+
+my assumptions and points for defending them,
+i assumed trading costs of 30 basis points for a round trip, this means .30% for buying and then selling that covers the brokers fee plus the slippage, however there was a temptation to assume 0cost for a better looking result but i avoided it
+
+studying one position at a time, sharp falls arrive in clusters, specially during a crash we get several of them in clusters, so to avoid inflating my apparent sample size i have picked one(i need this point to be improved)
+
+one non negotiable assumption was choosing the next morning's opening price rather than opting for present day's closing price because the fall is measured using the closing priceand you could only know the closing price after the market has shut ,and by then you can't buy at it any more.
+
+section3-
+
+as required by this project i aimed at asking fewer questions, this was a delibrate design choice. the questions i chose have their consequences, i ensured the user does not gets irritated by answering a 12point questionarre, so i chose just 2 questions for the user to answer, what counts as a sharp fall to you? and secondly how long are you looking to hold?
+i chose these two questions because they change the answer more than anything else does. also each choice has its tradeoffs written next to it so there is transparency from the users POV
+
+section4- 
+
+market - NIFTY 50, daily prices, 4,659 trading days from September 2007 to September 2026.
+condition- the market closes down 2% or more in a single day. 
+entry - buy at the opening price of the next trading day, already mentioned above the "whyy"
+exit - sell after a fixed number of trading days, regardless of what happened.
+Holding period — 5 trading days, roughly a week.
+Test period — the full nineteen years
+filters - one position at a time.
+Costs — 0.30% per round trip.
+Comparison — the identical rules applied starting on every day in the period, not just the days after a fall. thats the benchmark the result is measured against.
+Hypothesis — buying after a defined market fall produces a higher return over a defined  period than buying on an ordinary day in the same period.
+
+
+section5- 
+
+look-ahead-bias,
+this not just a weak link but it could make our whole study meaningless. as explained earlier we cant use closing prices to buy as they are available at the end of the day, cant use an information that does not exist yet and which is in the future.
+
+Trying many things, keeping the best,
+ while building this i tested roughly thirteen different combinations : five fall sizes (1%, 2%, 3%, 4%, 5%), five holding periods (1, 5, 10, 20 and 60 days), a couple of alternative definitions. the underlying problem over here is that in a world where buying dips does absolutely nothing, about one test in twenty will look good even when there's nothing there due to randomness. running just one test is probably going to be fine but running thirteen of them makes the chance that at least one of them looks good by accident climbs to about 49%.. So the best-looking result from all our testing was a 4% threshold, which showed about a 1% advantage is exactly the kind of thing you would expect to stumble across in thirteen attempts even if the whole idea is worthless, i could have quietly reported only that one result and it would have looked like a success, but i think thats the difference between testing an idea, not shopping for a good number.
+
+Costs
+Every trade costs money: the broker fee, plus the small gap between the price you see when you decide and the price you actually get overall about 0.30% to buy and sell once. The advantages being measured here are smaller than that. So a pattern can be completely real and still not worth trading, because collecting it costs more than it pays. Assuming zero cost is the easiest way to make a backtest look good, which is why I didn't.
+
+Not enough occurrences
+There is one more tension in this whole question. The stricter our definition of a sharp fall, the more it matches what people  actually mean by the phrase , but the fewer times it has ever happened. A 1% fall gives you 647 occurrences, which is plenty of data but describes ordinary market noise rather than anything anyone would call sharp. if we look at 4% we would be describing something genuinely dramatic, but it has only happened 26 times in 19 years. so you cannot tell whether you are looking at a real pattern or at luck.this flaw cant be fixed because the information simply is not there. It is a limit of the question itself, and the only real solution to this is more data.
+
+ Closing — the conclusion
+Two things to cover here,
+
+a fair comparison against ordinary days, realistic costs, no look-ahead — nothing that was tested produced a result that could be told apart from chance. The naive reading of the original question, buying after a 2% fall and holding a week, actually did a bit worse than buying on a random day. This is a finding rather than a failure. It is an answer to the question that was asked, and it is more useful than a number would have been, because it tells us not to trade this.
+
+"No evidence that it works" is not the same thing as "evidence that it does not work". here i have not proved that buying dips fails, what i have shown is that nineteen years of Indian index data cannot distinguish a real effect from luck. The effect might be real and small; it might be nothing at all. The data does not settle it, and i beleive saying that is more accurate than claiming either. Being willing to stop at that point, rather than pushing to a cleaner-sounding conclusion seemed a better approach.

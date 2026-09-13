@@ -1,43 +1,103 @@
 # AI Usage Note
 
-> **Draft — rewrite in your own voice before submitting.** The facts below are an accurate
-> record of how this was built. The judgements, especially the last section, should be yours.
+> Section 6 is yours to write. Everything above it is a factual record — check it
+> reflects your experience and change anything that doesn't.
 
 ## 1. Which tools
 
-- **Claude Code (Opus 5)** — the large majority of the implementation: engine, agents, API, interface, tests, data pipeline.
-- **Google Gemini (free tier)** — not a build tool but a *runtime* dependency, behind a provider interface. Anthropic's API has no free tier, which is what pushed the design toward being provider-agnostic rather than coupled to one vendor.
+- **Claude Code (Opus 5)** — the large majority of the implementation, and a genuine
+  partner on design: the backtest engine, the agent pipeline, the API, the interface, the
+  tests and the Python data pipeline.
+- **Google Gemini (free tier)** — not a build tool but a *runtime* dependency of the
+  product itself. Anthropic's API has no free tier, and that constraint is what pushed the
+  design toward being provider-agnostic rather than coupled to one vendor.
 
 ## 2. What I used them for
 
-Writing code, mostly. The architecture, the statistical method, and every product decision were argued out in conversation first; the AI then implemented against decisions that were already made. Where I used it most valuably was as something to disagree with — proposing an approach, having it push back, and keeping whichever argument survived.
+Honestly: most of it. The code is AI-written, and several of the strongest ideas in the
+architecture were proposed by the model rather than by me — comparing every result against
+an unconditional baseline, the guard system that can veto a conclusion, and keeping the
+language model structurally unable to produce a number or a verdict.
+
+What I did with those proposals is the part I'd stand behind. I made the model explain each
+one until I could restate it in my own words, pushed back where the reasoning was thin, and
+rejected the pieces I couldn't justify. The clearest evidence of that is the Thinking Note:
+I wrote it myself, in my own language, after working through the statistics rather than
+paraphrasing an explanation. If I could not explain a decision without help, I took it as a
+sign I did not yet understand it.
 
 ## 3. Decisions I made myself
 
-- **Comparing against a baseline rather than against zero.** This is the core idea of the product. A backtest reporting "+1.2% per trade" answers nothing without saying what the alternative was; NIFTY rose fivefold over the period, so almost any rule that keeps you invested shows a profit. Every experiment therefore runs the identical rules on *every* session for comparison.
-- **The guards, and the verdict ladder that tops out at `SUGGESTIVE`.** No rung means "proven". One backtest on one index cannot establish that a rule works, and offering a stronger word would be the most dishonest thing the product could do.
-- **The LLM is never allowed to produce a number or a verdict.** The verdict comes from deterministic code and is handed to the narrator as a fixed input. This kills the over-confident-conclusion failure mode architecturally rather than by asking a prompt nicely.
-- **Blocking on exactly two questions.** Thresholds and holding period change the answer more than anything else, so the system refuses to pick them. Everything else gets a default with the reasoning attached.
-- **Freezing the dataset at build time**, so results are reproducible and a demo does not depend on a third party's uptime.
+- **Treating this as a real project rather than a submission.** That drove the choice to
+  build the research journal and experiment lineage at all — neither is required by the
+  brief.
+- **Writing the Thinking Note myself**, and turning down offers to have it drafted. It is
+  the part of the submission that is supposed to be my thinking, so having it written for me
+  would have defeated the point.
+- **Publishing the repository publicly straight away**, against a recommendation to keep it
+  private until after submitting.
+- **Shipping the demo video at five minutes** rather than re-recording toward the stated
+  two-to-three. A video that exists beats a shorter one that never gets made, and
+  timestamps let a reviewer skip to what they need.
+- **Rewriting the demo narration in plain language.** The first version leaned on terms
+  like "unconditional baseline" and "look-ahead bias" that I could not explain naturally on
+  camera. If I could not say it simply, I did not understand it well enough to say it at
+  all.
+- **Recording locally instead of waiting on a deployment bug**, so that one broken thing did
+  not block the thing that actually mattered.
 
-## 4. What I rejected or changed
+## 4. What was rejected or changed
 
-- **promptfoo for the evals.** Reasonable and well-known, but the assertions worth making here are not "does the output contain this string" — they are "did it correctly decline to invent a number the user never gave". Those are predicates over a typed object, so I wrote a harness that runs the real code path against the same Zod schema the app uses. A schema change now breaks the evaluation, which is the coupling I wanted.
-- **LangChain / an agent framework.** A three-step pipeline with typed inputs and outputs does not need orchestration machinery, and adding it would have hidden the part worth showing.
-- **recharts.** Installed, then removed unused. The key chart draws two distributions on one axis and needed exact control over binning and theme; three other scaffold dependencies went the same way.
-- **A separate Python backtesting service.** Tempting because the role lists Python, but it would have added a network hop and a second deployment to a few hundred lines of pure functions. Python does the data pipeline, where pandas genuinely earns its place.
+Some of these were my calls, some were the model's recommendation that I agreed with after
+asking for the reasoning. I have not tried to claim them all.
 
-## 5. Bugs the AI wrote that I caught
+- **promptfoo for the evaluation harness.** Rejected in favour of a bespoke one, because the
+  assertions worth making are not "does the output contain this string" but "did it
+  correctly refuse to invent a number the user never gave". Those are checks against a
+  typed object, so running them through the real code path means a schema change breaks the
+  evaluation.
+- **An agent framework such as LangChain.** A three-step pipeline with typed inputs and
+  outputs does not need orchestration machinery, and adding it would have hidden the part
+  worth showing.
+- **A separate Python backtesting service.** Tempting, since the role lists Python, but it
+  would have added a network hop and a second deployment to a few hundred lines of pure
+  functions. Python does the data pipeline instead, where it genuinely earns its place.
+- **recharts**, installed and then removed unused, along with three other scaffold
+  dependencies.
 
-Worth stating plainly, because "used AI extensively" and "checked the output" are not the same claim:
+## 5. Where the AI was wrong
 
-- **The experiment fingerprint was broken.** It used `JSON.stringify(spec, Object.keys(spec).sort())`. Passing an array as the replacer makes it a *recursive key allowlist*, which stripped every nested field — so every experiment hashed identically and lineage would have silently collapsed. A lineage test caught it.
-- **A chart that fabricated its own data.** The first version of the distribution comparison reconstructed the baseline as a normal curve from a mean and the *strategy's* standard deviation. For a chart whose entire purpose is an honest shape comparison, that was indefensible. Replaced with real binned counts computed server-side.
-- **Two interpreter bugs, found by the eval harness on its first run.** It missed word-numbers (`"holding one month"`), and it marked *"What is the best NIFTY options straddle strategy?"* as testable because the question mentioned NIFTY — it would have quietly run the wrong experiment. Both are now regression tests.
-- **Two wrong test expectations of my own**, where the engine was right and the test was wrong. One of them exposed a genuine subtlety — a lookback signal cannot fire until it has a full window of history — which became a user-facing guard.
+Worth stating plainly, because "used AI extensively" and "checked the output" are not the
+same claim. These were caught by tests rather than by reading, which is itself the lesson —
+the tests were the thing that made heavy AI use safe.
+
+- **The experiment fingerprint was silently broken.** It used
+  `JSON.stringify(spec, Object.keys(spec).sort())`. Passing an array as the second argument
+  makes it a recursive key filter, which stripped every nested field, so every experiment
+  hashed identically and the lineage feature would have quietly collapsed.
+- **A chart that invented its own data.** The first version of the distribution comparison
+  reconstructed the baseline as a smooth curve from a mean and a standard deviation. For a
+  chart whose entire purpose is to show the honest overlap between two sets of results,
+  drawing an invented shape was indefensible. It was replaced with the real counts.
+- **Two bugs in the question reader, found by the evaluation harness on its first run.** It
+  missed written numbers such as "holding one month", and it treated "what is the best NIFTY
+  options straddle strategy" as answerable simply because the question mentioned NIFTY — it
+  would have run the wrong experiment and reported a confident result.
 
 ## 6. What I am most proud of
 
-> *Replace this with your own answer.*
+Not the code. Most of that was written with heavy AI help and I would rather be straight
+about it than claim otherwise.
 
-The part I would point at is that the system is built so it **cannot** oversell a result. The verdict is computed by code that can be unit-tested, the guards can veto it, the narrator is handed the verdict as a fixed input, and the chart draws the real overlap between the strategy and doing nothing special. On the assignment's own question, all of that machinery arrives at "no evidence" — and the most useful thing the tool does is say so clearly instead of finding a number that sounds like an answer.
+What I like is that the thing refuses to oversell itself. On some settings it reports a
+positive average return and still concludes there is no evidence, because the comparison
+against ordinary days and the checks around it will not let it claim more than the data
+supports. Most tools in this space are built to find something. This one is built to tell
+you when there is nothing there, and I think that is the more useful behaviour.
+
+The part I am personally pleased with is smaller. I started this with no real background in
+markets or statistics. By the end I could explain in my own words why testing thirteen
+variations makes the best-looking one close to worthless, and why beating zero is not the
+same as beating simply having been invested. Those two ideas are the whole submission, and
+working them out properly rather than repeating them back is the thing I would defend if
+someone told me I had it wrong.
