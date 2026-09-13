@@ -152,15 +152,42 @@ export function roundTripCostBps(costs: Costs): number {
 }
 
 /**
+ * Deterministic serialisation with keys sorted at every depth, so that two
+ * specs which differ only in property order hash identically.
+ *
+ * Written by hand rather than via `JSON.stringify(value, replacer)`: passing an
+ * array as the replacer makes it a key allowlist applied recursively, which
+ * silently strips every nested field and collapses all specs to the same hash.
+ */
+function canonicalize(value: unknown): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value) ?? "null";
+  if (Array.isArray(value)) return `[${value.map(canonicalize).join(",")}]`;
+
+  const obj = value as Record<string, unknown>;
+  const body = Object.keys(obj)
+    .sort()
+    .map((k) => `${JSON.stringify(k)}:${canonicalize(obj[k])}`)
+    .join(",");
+  return `{${body}}`;
+}
+
+/**
  * Stable content hash of a spec, used for experiment lineage and for detecting
- * that the user has re-run an identical configuration.
+ * that the user has re-run an identical configuration. Two FNV-1a passes with
+ * different offsets, concatenated, to keep accidental collisions across a
+ * research journal negligible.
  */
 export function specFingerprint(spec: StrategySpec): string {
-  const canonical = JSON.stringify(spec, Object.keys(spec).sort());
-  let h = 0x811c9dc5;
-  for (let i = 0; i < canonical.length; i++) {
-    h ^= canonical.charCodeAt(i);
-    h = Math.imul(h, 0x01000193);
-  }
-  return (h >>> 0).toString(16).padStart(8, "0");
+  const canonical = canonicalize(spec);
+
+  const fnv = (offset: number) => {
+    let h = offset;
+    for (let i = 0; i < canonical.length; i++) {
+      h ^= canonical.charCodeAt(i);
+      h = Math.imul(h, 0x01000193);
+    }
+    return (h >>> 0).toString(16).padStart(8, "0");
+  };
+
+  return fnv(0x811c9dc5) + fnv(0x9dc5811c);
 }

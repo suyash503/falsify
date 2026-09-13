@@ -8,7 +8,7 @@ import {
 } from "@/core/backtest/engine";
 import { summarize } from "@/core/backtest/stats";
 import { concludeFrom, evaluateGuards } from "@/core/backtest/guards";
-import type { StrategySpec } from "@/core/spec";
+import { specFingerprint, type StrategySpec } from "@/core/spec";
 
 /**
  * Hand-built bars. Using a synthetic series rather than real data means every
@@ -322,5 +322,34 @@ describe("verdict ladder", () => {
     expect(["INVALID", "NO_EVIDENCE", "WEAK_EVIDENCE", "SUGGESTIVE"]).toContain(
       verdict,
     );
+  });
+});
+
+describe("specFingerprint", () => {
+  it("changes when any nested value changes", () => {
+    const a = spec();
+    const b = spec({ signal: { kind: "single_day_return", thresholdPct: -3 } });
+    const c = spec({ exit: { kind: "fixed_holding", holdingDays: 20 } });
+
+    expect(specFingerprint(a)).not.toBe(specFingerprint(b));
+    expect(specFingerprint(a)).not.toBe(specFingerprint(c));
+    expect(specFingerprint(b)).not.toBe(specFingerprint(c));
+  });
+
+  it("is stable across property ordering", () => {
+    const a = spec();
+    const reordered = JSON.parse(
+      JSON.stringify({
+        hypothesis: a.hypothesis,
+        filters: a.filters,
+        costs: a.costs,
+        testPeriod: a.testPeriod,
+        exit: a.exit,
+        entryTiming: a.entryTiming,
+        signal: a.signal,
+        instrument: a.instrument,
+      }),
+    );
+    expect(specFingerprint(reordered)).toBe(specFingerprint(a));
   });
 });
