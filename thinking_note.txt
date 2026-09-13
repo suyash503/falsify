@@ -22,7 +22,7 @@ thats it
 my assumptions and points for defending them,
 i assumed trading costs of 30 basis points for a round trip, this means .30% for buying and then selling that covers the brokers fee plus the slippage, however there was a temptation to assume 0cost for a better looking result but i avoided it
 
-studying one position at a time, sharp falls arrive in clusters, specially during a crash we get several of them in clusters, so to avoid inflating my apparent sample size i have picked one(i need this point to be improved)
+studying one position at a time, sharp falls arrive in clusters, specially during a crash we get several of them in clusters, so to avoid inflating my apparent sample size i have picked one
 
 one non negotiable assumption was choosing the next morning's opening price rather than opting for present day's closing price because the fall is measured using the closing priceand you could only know the closing price after the market has shut ,and by then you can't buy at it any more.
 
@@ -55,6 +55,12 @@ Trying many things, keeping the best,
 
 Costs
 Every trade costs money: the broker fee, plus the small gap between the price you see when you decide and the price you actually get overall about 0.30% to buy and sell once. The advantages being measured here are smaller than that. So a pattern can be completely real and still not worth trading, because collecting it costs more than it pays. Assuming zero cost is the easiest way to make a backtest look good, which is why I didn't.
+
+
+It's a price index, so dividends are excluded ,about 1-1.5% a year you would really have earned.
+34 rows were for days the market never opened and had to be removed.
+Three days show moves over 10% (2008, 2009, 2020) that look like errors but are real , so they were flagged rather than auto-filtered, because a filter strict enough to catch bad data would have deleted the most important real days.
+
 
 Not enough occurrences
 There is one more tension in this whole question. The stricter our definition of a sharp fall, the more it matches what people  actually mean by the phrase , but the fewer times it has ever happened. A 1% fall gives you 647 occurrences, which is plenty of data but describes ordinary market noise rather than anything anyone would call sharp. if we look at 4% we would be describing something genuinely dramatic, but it has only happened 26 times in 19 years. so you cannot tell whether you are looking at a real pattern or at luck.this flaw cant be fixed because the information simply is not there. It is a limit of the question itself, and the only real solution to this is more data.
