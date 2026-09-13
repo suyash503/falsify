@@ -154,9 +154,16 @@ export async function runExperiment(id: string): Promise<ExperimentRecord | null
   const raw = runBacktest(bars, spec);
   const stats = summarize(raw, spec);
 
-  // How many experiments in this family have already been run against the same
-  // data - the input to the multiple-testing guard.
-  const variantsTestedInLineage = Math.max(1, await repo.countLineage(id));
+  // How many experiments in this family have been run against the same data -
+  // the input to the multiple-testing guard. The run happening right now counts
+  // towards the total, so a first re-test of a forked idea correctly reports
+  // two variants rather than one. Re-running an already-complete experiment
+  // does not double-count itself.
+  const completedInLineage = await repo.countLineage(id);
+  const variantsTestedInLineage =
+    record.status === "complete"
+      ? Math.max(1, completedInLineage)
+      : completedInLineage + 1;
 
   const guards = evaluateGuards(spec, raw, stats, {
     variantsTestedInLineage,

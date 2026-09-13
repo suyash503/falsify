@@ -169,6 +169,24 @@ describe("lineage and multiple testing", () => {
     expect(blockingQuestions(child!.assumptions)).toHaveLength(0);
   });
 
+  it("counts the run in progress, so the first fork already warns", async () => {
+    const created = await createExperiment(SEED_QUESTION);
+    await submitAnswers(created.id, { signal: "d2", holding: 5 });
+    const parent = await runExperiment(created.id);
+    // The parent alone is one variant and must not warn.
+    expect(parent!.result!.guards.map((g) => g.id)).not.toContain(
+      "MULTIPLE_TESTING",
+    );
+
+    const proposal = parent!.result!.nextExperiments[0];
+    const child = await forkExperiment(parent!.id, proposal.id);
+    const ran = await runExperiment(child!.id);
+
+    const guard = ran!.result!.guards.find((g) => g.id === "MULTIPLE_TESTING");
+    expect(guard).toBeDefined();
+    expect(guard!.title).toMatch(/^2 variants/);
+  });
+
   it("warns about multiple testing once a lineage accumulates runs", async () => {
     const created = await createExperiment(SEED_QUESTION);
     await submitAnswers(created.id, { signal: "d2", holding: 5 });
