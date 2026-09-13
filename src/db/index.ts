@@ -109,9 +109,44 @@ function postgresRepository(url: string): Repository {
   const sql = postgres(url, { max: 1, prepare: false });
   const db = drizzle(sql);
 
+  /**
+   * Create the table on first use if it is not already there.
+   *
+   * For a single-table prototype this removes a whole class of deployment
+   * failure: attaching a database becomes "paste the connection string and
+   * redeploy", with no separate migration step to forget. The generated
+   * migration in `drizzle/` remains the source of truth, and a real
+   * multi-table schema would need it rather than this.
+   */
+  let ready: Promise<void> | null = null;
+  const ensureSchema = () => {
+    ready ??= (async () => {
+      await sql`
+        CREATE TABLE IF NOT EXISTS experiments (
+          id text PRIMARY KEY NOT NULL,
+          created_at timestamp with time zone DEFAULT now() NOT NULL,
+          question text NOT NULL,
+          spec jsonb NOT NULL,
+          spec_fingerprint text NOT NULL,
+          assumptions jsonb NOT NULL,
+          questions jsonb NOT NULL,
+          status text NOT NULL,
+          parent_id text,
+          forked_because text,
+          interpretation_provenance jsonb NOT NULL,
+          result jsonb
+        )
+      `;
+      await sql`CREATE INDEX IF NOT EXISTS experiments_parent_idx ON experiments (parent_id)`;
+      await sql`CREATE INDEX IF NOT EXISTS experiments_created_idx ON experiments (created_at)`;
+    })();
+    return ready;
+  };
+
   return {
     kind: "postgres",
     async create(record) {
+      await ensureSchema();
       await db.insert(experiments).values({
         id: record.id,
         createdAt: new Date(record.createdAt),
@@ -129,6 +164,7 @@ function postgresRepository(url: string): Repository {
       return record;
     },
     async update(id, patch) {
+      await ensureSchema();
       const values: Record<string, unknown> = {};
       if (patch.spec !== undefined) values.spec = patch.spec;
       if (patch.specFingerprint !== undefined)
@@ -147,6 +183,7 @@ function postgresRepository(url: string): Repository {
       return rows[0] ? toRecord(rows[0]) : null;
     },
     async get(id) {
+      await ensureSchema();
       const rows = await db
         .select()
         .from(experiments)
@@ -155,6 +192,7 @@ function postgresRepository(url: string): Repository {
       return rows[0] ? toRecord(rows[0]) : null;
     },
     async list(limit = 50) {
+      await ensureSchema();
       const rows = await db
         .select()
         .from(experiments)
@@ -163,6 +201,7 @@ function postgresRepository(url: string): Repository {
       return rows.map(toRecord);
     },
     async countLineage(rootId) {
+      await ensureSchema();
       // Recursive CTE: walk the whole ancestry tree containing this node.
       const rows = await sql<{ count: string }[]>`
         WITH RECURSIVE up AS (
@@ -183,6 +222,7 @@ function postgresRepository(url: string): Repository {
       return Number(rows[0]?.count ?? 0);
     },
     async children(id) {
+      await ensureSchema();
       const rows = await db
         .select()
         .from(experiments)

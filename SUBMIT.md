@@ -15,7 +15,8 @@ Ordered. Timeboxed. Nothing gets added to this list — new ideas go in `v2.md`.
         1. neon.tech → new project (free, no card) → copy the connection string
         2. Vercel → project → Settings → Environment Variables → DATABASE_URL
         3. Redeploy
-        4. Locally: put the same string in `.env.local`, run `npm run db:push`
+      That is all. The table is created automatically on first use, so there is
+      no migration step to run.
       Verify: open the live URL, ask the question, confirm the page loads.
 
 - [ ] **Thinking Note** — 30 min, 2 pages max
