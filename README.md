@@ -1,5 +1,7 @@
 # Falsify
 
+[![CI](https://github.com/suyash503/falsify/actions/workflows/ci.yml/badge.svg)](https://github.com/suyash503/falsify/actions/workflows/ci.yml)
+
 **A research tool that turns a vague market question into an experiment, and then argues with the result.**
 
 Ask *"Does buying NIFTY after a sharp fall work?"* and most tools will hand you a number. This one starts by pointing out that the question cannot be answered as asked, refuses to guess the two things that would decide the answer, and — once you have decided them — tests the idea against nineteen years of NIFTY 50 history *and against simply having been invested*, which is the comparison that actually settles the question.
@@ -7,7 +9,7 @@ Ask *"Does buying NIFTY after a sharp fall work?"* and most tools will hand you 
 On the seed question, the honest answer is **no evidence**. The tool says so.
 
 ```bash
-git clone <repo> && cd falsify
+git clone https://github.com/suyash503/falsify.git && cd falsify
 npm install
 npm run dev
 ```
