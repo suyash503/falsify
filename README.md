@@ -4,9 +4,9 @@
 
 **A research tool that turns a vague market question into an experiment, and then argues with the result.**
 
+**▶ [Demo video](https://youtu.be/XdWW6mmYY88)** · **[Live prototype](https://falsify-pink.vercel.app/)**
+
 ---
-here is the demo video link-
-https://youtu.be/XdWW6mmYY88
 
 ## Submission
 
